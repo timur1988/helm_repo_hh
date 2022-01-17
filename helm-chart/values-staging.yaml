@@ -1,0 +1,99 @@
+# System
+replicaCount_source: 1
+replicaCount_event_splitter: 1
+replicaCount_outcome_splitter: 1
+replicaCount_live_sport_inserter: 1
+replicaCount_live_competition_inserter: 1
+replicaCount_live_event_inserter: 3
+replicaCount_live_outcome_value_inserter: 6
+replicaCount_live_outcome_template_inserter: 1
+replicaCount_live_outcome_group_inserter: 1
+replicaCount_line_sport_inserter: 1
+replicaCount_line_competition_inserter: 1
+replicaCount_line_event_inserter: 3
+replicaCount_line_outcome_value_inserter: 6
+replicaCount_line_outcome_template_inserter: 1
+replicaCount_line_outcome_group_inserter: 1
+replicaCount_worker: 1
+
+image:
+  repository: 
+  pullPolicy: IfNotPresent
+  image_event_splitter: 
+  tag_event_splitter: dev
+  image_outcome_splitter: 
+  tag_outcome_splitter: dev
+  image_source: 
+  tag_source: dev
+  image_inserter: 
+  tag_inserter: dev
+  image_writer_db: 
+  tag_writer_db: 
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 8080
+  appport: 8080
+
+imagePullSecrets:
+  - name: regcred
+imageCredentials:
+  registry: 
+  username: ""
+  password: ""
+
+global:
+  env: ""
+
+#probes:
+#  readinessProbe:
+#    httpGet:
+#      path: /
+#      port: http
+#    periodSeconds: 10
+#    timeoutSeconds: 10
+#    successThreshold: 1
+#    failureThreshold: 10
+#  livenessProbe:
+#    httpGet:
+#      path: /
+#      port: http
+#    periodSeconds: 10
+#    timeoutSeconds: 10
+#    successThreshold: 1
+#    failureThreshold: 10
+
+
+
+env:          
+ - name: "KAFKA_BROKERS"
+   value: ""
+ - name: "JAVA_TOOL_OPTIONS"
+   value: "-Xms1G -Xmx2G -Dserver.address=0.0.0.0 -Dserver.port=8080 -Dlogging.level.org.apache.kafka=debug"
+ - name: "MSSQL_HOST"
+   value: ""
+ - name: "MSSQL_USER"
+   value: ""
+ - name: "MSSQL_PASSWORD"
+   value: ""
+ - name: "PG_HOST"
+   value: ""
+ - name: "PG_PORT"
+   value: "''"
+ - name: "PG_USER"
+   value: ""
+ - name: "PG_PASSWORD"
+   value: ""
+
+resources: {}
+
+nodeSelector:
+  usecase: workload
+
+
+tolerations: []
+
+affinity: {}

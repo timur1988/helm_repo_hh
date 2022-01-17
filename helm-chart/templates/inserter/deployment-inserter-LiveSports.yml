@@ -1,0 +1,63 @@
+{{- $root := . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inserter-livesports
+  labels:
+    app.kubernetes.io/name: {{ include "olimp-api.name" . }}
+    helm.sh/chart: {{ include "olimp-api.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    env: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.replicaCount_live_sport_inserter }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "olimp-api.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "olimp-api.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+      annotations:
+        roll: {{ randAlphaNum 5 | quote }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      containers:
+        - name: inserter-livesports
+          image: "{{ .Values.image.repository }}/{{ .Values.image.image_inserter }}:{{ .Values.image.tag_inserter }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+          - containerPort: {{ .Values.service.appport }}
+            name: http
+            protocol: TCP
+          {{- with .Values.probes }}
+            {{- toYaml . | nindent 10 }}
+          {{- end }}
+          env:
+            {{- range .Values.env }}
+          - name: {{ .name }}
+            value: {{ .value }}
+         {{- end }}
+          - name: SPRING_PROFILES_ACTIVE
+            value: LiveSports
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
